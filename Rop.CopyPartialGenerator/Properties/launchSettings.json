@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Rop.CopyPartialGenerator": {
+      "commandName": "Project"
+    },
+    "DebugGenerator": {
+      "commandName": "DebugRoslynComponent",
+	  "targetProject": "..\\test.copypartialgenerator\\test.copypartialgenerator.csproj"
+    }
+  }
+}
