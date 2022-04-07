@@ -8,7 +8,7 @@
 	<PackageTags>extensions;proxy;source generator;roslyn</PackageTags>
 	<Description>Source generator to create ProxyClasses</Description>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	<Version>1.0.2</Version>
+	<Version>1.0.5</Version>
 	<Authors>Ramon Ordiales Plaza</Authors>
 	<Company>Ramon Ordiales Plaza</Company>
 	<Copyright>2022 Ramon Ordiales</Copyright>

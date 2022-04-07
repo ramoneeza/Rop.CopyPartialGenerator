@@ -7,26 +7,23 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Rop.CopyPartialGenerator
 {
+    internal enum CopyTypeEnum
+    {
+        CopyClass,
+        CopyImmutable,
+        CopyEditable
+    }
+
     public class CopyClassToAugment
     {
-        public PartialClassToAugment ClassToAugment { get; set; }
-        public string NewClassName { get; private set; }
-        public BaseListSyntax BaseList { get; private set; }
+        internal CopyTypeEnum AttType { get; }
+        public PartialClassToAugment ClassToAugment { get;}
+        public string NewClassName { get;}
+        public BaseListSyntax BaseList { get; }
         public List<string> Excludes { get; } = new List<string>();
-        public CopyClassToAugment(ClassDeclarationSyntax classToAugment)
-        {
-            ClassToAugment = new PartialClassToAugment(classToAugment);
-            var att = classToAugment.GetDecoratedWith("CopyPartialTo").ArgumentList.ToStringValues().ToList();
-            NewClassName = att[0];
-            BaseList = classToAugment.BaseList;
-            if (att.Count > 1)
-            {
-                var ex = att.Skip(1);
-                Excludes.AddRange(ex);
-            }
-        }
         public CopyClassToAugment(ClassDeclarationSyntax classToAugment,AttributeSyntax astt)
         {
+            AttType =_GetAttType(astt.Name.ToString());
             ClassToAugment = new PartialClassToAugment(classToAugment);
             var att = astt.ArgumentList.ToStringValues().ToList();
             NewClassName = att[0];
@@ -35,6 +32,17 @@ namespace Rop.CopyPartialGenerator
             {
                 var ex = att.Skip(1);
                 Excludes.AddRange(ex);
+            }
+        }
+
+        private static CopyTypeEnum _GetAttType(string attname)
+        {
+            switch (attname)
+            {
+                case "CopyPartialTo": return CopyTypeEnum.CopyClass;
+                case "CopyPartialAsImmutableRecord": return CopyTypeEnum.CopyImmutable;
+                case "CopyPartialAsEditableClass": return CopyTypeEnum.CopyEditable;
+                default: return CopyTypeEnum.CopyClass;
             }
         }
 
@@ -47,10 +55,11 @@ namespace Rop.CopyPartialGenerator
             yield return $"namespace {ClassToAugment.Namespace}";
             yield return "{";
             var bsstr = BaseList?.ToString() ?? "";
-            yield return $"\tpublic partial class {NewClassName}{bsstr}";
+
+            var classorrecord = (AttType == CopyTypeEnum.CopyImmutable) ? "record" : "class";
+
+            yield return $"\tpublic partial {classorrecord} {NewClassName}{bsstr}";
             yield return "\t{";
-            
-            
             
         }
 
@@ -76,7 +85,18 @@ namespace Rop.CopyPartialGenerator
                         var name2 = property.Identifier.ToString();
                         if (!isdecorated2 && !ex.Contains(name2))
                         {
-                            res.Add(syntaxNode.ToFullString());
+                            var full = syntaxNode.ToFullString();
+                            switch (AttType)
+                            {
+                                case CopyTypeEnum.CopyImmutable:
+                                    full = full.Replace("set;", "init;");
+                                    break;
+                                case CopyTypeEnum.CopyEditable:
+                                    full = full.Replace("private set;", "set;");
+                                    full = full.Replace("init;", "set;");
+                                    break;
+                            }
+                            res.Add(full);
                         }
                         break;
                     case AttributeListSyntax attlst:

@@ -13,4 +13,20 @@ namespace Rop.CopyPartial.Annotations
             Exclude=exclude;
         }
     }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    public class CopyPartialAsImmutableRecordAttribute : CopyPartialToAttribute
+    {
+        public CopyPartialAsImmutableRecordAttribute(Type classname, params string[] exclude) : base(classname, exclude)
+        {
+        }
+    }
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    public class CopyPartialAsEditableClassAttribute : CopyPartialToAttribute
+    {
+        public CopyPartialAsEditableClassAttribute(Type classname, params string[] exclude) : base(classname, exclude)
+        {
+        }
+    }
+
 }

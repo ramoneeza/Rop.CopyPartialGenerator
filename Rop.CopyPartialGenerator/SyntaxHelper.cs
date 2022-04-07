@@ -11,30 +11,40 @@ namespace Rop.CopyPartialGenerator
 {
     public static class SyntaxHelper
     {
+        public static string GetDecoratedWith(this AttributeSyntax att, params string[] attnames)
+        {
+            var name = att.Name.ToString();
+            return attnames.FirstOrDefault(a => a.Equals(name))??"";
+        }
+        public static bool IsDecoratedWith(this AttributeSyntax att, params string[] attnames)
+        {
+            return GetDecoratedWith(att, attnames)!="";
+        }
+        
         /// <summary>
         /// Class is decorated with some attribute
         /// </summary>
-        public static bool IsDecoratedWith(this TypeDeclarationSyntax item, string attname)
+        public static bool IsDecoratedWith(this TypeDeclarationSyntax item, params string[] attnames)
         {
-            return item.AttributeLists.SelectMany(a => a.Attributes).Any(a => a.Name.ToString().Equals(attname));
+            return item.AttributeLists.SelectMany(a => a.Attributes).Any(a =>a.IsDecoratedWith(attnames));
         }
         /// <summary>
         /// Member is decorated with some attribute
         /// </summary>
-        public static bool IsDecoratedWith(this MemberDeclarationSyntax item, string attname)
+        public static bool IsDecoratedWith(this MemberDeclarationSyntax item, params string[] attnames)
         {
-            return item.AttributeLists.SelectMany(a => a.Attributes).Any(a => a.Name.ToString().Equals(attname));
+            return item.AttributeLists.SelectMany(a => a.Attributes).Any(a => a.IsDecoratedWith(attnames));
         }
         /// <summary>
         /// Get decorated attribute for a class
         /// </summary>
         public static AttributeSyntax GetDecoratedWith(this TypeDeclarationSyntax item, string attname)
         {
-            return item.AttributeLists.SelectMany(a => a.Attributes).FirstOrDefault(a => a.Name.ToString().Equals(attname));
+            return item.AttributeLists.SelectMany(a => a.Attributes).FirstOrDefault(a => a.IsDecoratedWith(attname));
         }
-        public static AttributeSyntax[] GetDecoratedManyWith(this TypeDeclarationSyntax item, string attname)
+        public static AttributeSyntax[] GetDecoratedManyWith(this TypeDeclarationSyntax item,params string[] attnames)
         {
-            return item.AttributeLists.SelectMany(a => a.Attributes).Where(a => a.Name.ToString().Equals(attname)).ToArray();
+            return item.AttributeLists.SelectMany(a => a.Attributes).Where(a =>a.IsDecoratedWith(attnames)).ToArray();
         }
 
         /// <summary>
@@ -42,7 +52,7 @@ namespace Rop.CopyPartialGenerator
         /// </summary>
         public static AttributeSyntax GetDecoratedWith(this MemberDeclarationSyntax item, string attname)
         {
-            return item.AttributeLists.SelectMany(a => a.Attributes).FirstOrDefault(a => a.Name.ToString().Equals(attname));
+            return item.AttributeLists.SelectMany(a => a.Attributes).FirstOrDefault(a => a.IsDecoratedWith(attname));
         }
         /// <summary>
         /// Childs of type T

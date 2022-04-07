@@ -52,9 +52,10 @@ namespace Rop.CopyPartialGenerator
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
                 // Business logic to decide what we're interested in goes here
-                if (syntaxNode is ClassDeclarationSyntax cds && cds.IsDecoratedWith("CopyPartialTo"))
+                if (syntaxNode is ClassDeclarationSyntax cds)
                 {
-                    var atts = cds.GetDecoratedManyWith("CopyPartialTo");
+                    var atts = cds.GetDecoratedManyWith("CopyPartialTo","CopyPartialAsImmutableRecord","CopyPartialAsEditableClass");
+                    if (atts.Length==0) return;
                     foreach (var attributeSyntax in atts)
                     {
                         var ac = new CopyClassToAugment(cds,attributeSyntax);

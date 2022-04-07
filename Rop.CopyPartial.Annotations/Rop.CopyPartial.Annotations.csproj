@@ -7,7 +7,7 @@
 	  <PackageTags>helper-classes;AOP;annotations</PackageTags>
 	  <Description>Annotations for Copy Partial Generator</Description>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Version>1.0.1</Version>
+	  <Version>1.0.2</Version>
 	  <Authors>Ramon Ordiales Plaza</Authors>
 	  <Company>Ramon Ordiales Plaza</Company>
 	  <Copyright>2022 Ramon Ordiales</Copyright>
